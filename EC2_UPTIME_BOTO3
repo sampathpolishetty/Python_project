@@ -1,0 +1,48 @@
+import json
+import boto3
+import time
+from datetime import datetime, timedelta
+import dateutil
+
+
+def lambda_handler(event, context):
+ test_delete_expired_securities()
+
+def delete_expired_securities(crd_id_mapping_bucket, crd_id_mapping_prefix):
+    today_date = datetime.today().date()
+    s3_conn = boto3.resource('s3')
+    bucket = s3_conn.Bucket(crd_id_mapping_bucket)
+    file_list = []
+    for obj in bucket.objects.filter(Prefix=crd_id_mapping_prefix):
+        try:
+            obj_id = obj.key
+            obj_data = obj.get()['Body'].read().decode()
+            mapping_loads = json.loads(obj_data)
+            print(mapping_loads)
+            expire_date = mapping_loads['expiryDate']
+            date_old = today_date - parse(expire_date).date()
+            if date_old.days > 7:
+                s3_conn.Object(crd_id_mapping_bucket, obj_id).delete()
+                file_list.append(obj_id)
+        except:
+            pass
+            print(f"Could not decode file {obj_id}")
+    return file_list
+
+def test_delete_expired_securities():
+    s3_conn = boto3.client('s3')
+    test_bucket = 'brilzant-bucket'
+    test_key_prefix = ""
+    #s3_conn.create_bucket(Bucket=test_bucket)
+    current_today = datetime.today().strftime('%Y-%m-%d %H:%M:%S.%f\\')
+    mock_data = json.dumps({"crdSecId": "3137738132", "bbUniqueId": "", "bbgDealId": "SP9J4RVO Corp", "cusip": "6174950F4", "expiryDate": "2020-03-20 00:00:00.0\\"})
+    mock_data1 = json.dumps({"crdSecId": "3137738142", "bbUniqueId": "", "bbgDealId": "SP9J4RVA Corp", "cusip": "6174950F4", "expiryDate": current_today})
+    mock_data2 = json.dumps({"crdSecId": "3137738136", "bbUniqueId": "", "bbgDealId": "SP9J4RVO Corp", "cusip": "6174950F4","expiryDate": "2020-03-28 00:00:00.0"})
+    key1 = f"{test_key_prefix}/3137738132.json"
+    key2 = f"{test_key_prefix}/3137738142.json"
+    key3 = f"{test_key_prefix}/3137738136.json"
+    s3_conn.put_object(Body=mock_data, Bucket=test_bucket, Key=key1)
+    s3_conn.put_object(Body=mock_data1, Bucket=test_bucket,Key=key2)
+    s3_conn.put_object(Body=mock_data2, Bucket=test_bucket, Key=key3) 
+    actual_file = delete_expired_securities(test_bucket, test_key_prefix)   
+    assert actual_file == [key3] 
