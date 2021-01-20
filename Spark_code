@@ -11,3 +11,6 @@ data2=[(1, "John", "Doe", 1986),
 df1 = spark.createDataFrame(data=data, schema =columns)
 
 df2 = spark.createDataFrame(data=data2, schema =columns_new)
+
+
+df3=df2.withColumn('FullName',concat(df2.col('first'),df2.col('last'))).drop('first','last')
