@@ -1,0 +1,15 @@
+val columns=Array("id", "first", "last", "year")
+
+val columns_new=Array("id", "FullName", "year")
+
+val df1=sc.parallelize(Seq(
+  (1, "John", 1986),
+  (2, "Ive", 1990),
+  (4, "John",  1995)
+)).toDF(columns_new: _*)
+
+val df2=sc.parallelize(Seq(
+  (1, "John", "Doe", 1986),
+  (2, "IveNew", "Fish", 1990),
+  (3, "San", "Simon", 1974)
+)).toDF(columns: _*)
