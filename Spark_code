@@ -14,3 +14,5 @@ df2 = spark.createDataFrame(data=data2, schema =columns_new)
 
 
 df3=df2.withColumn('FullName',concat(df2.col('first'),df2.col('last'))).drop('first','last')
+
+from pyspark.sql.functions import col, concat, lit
