@@ -18,3 +18,8 @@ df3=df2.withColumn('FullName',concat(df2.col('first'),df2.col('last'))).drop('fi
 from pyspark.sql.functions import col, concat, lit
 
 df3=df2.withColumn('FullName',concat(col('first'),col('last'))).drop('first','last')
+
+def df_subtract(comp:DataFrame,main:DataFrame,key1,key2,composite_key):
+     comp=comp.withColumn(composite_key,concat(col(key1),col(key2))).drop(key1,key2)
+	   diff=comp.subtract(main)
+	 return diff
