@@ -23,3 +23,26 @@ def df_subtract(comp:DataFrame,main:DataFrame,key1,key2,composite_key):
      comp=comp.withColumn(composite_key,concat(col(key1),col(key2))).drop(key1,key2)
 	   diff=comp.subtract(main)
 	 return diff
+	 
+	 
+
+
+------------------------------------------------
+
+ def df_concat(sdf: DataFrame,kwargs):
+        composite_key = kwargs["composite_key"]
+		key1 = kwargs["s_composite_key"][0]
+		key2 = kwargs["s_composite_key"][1]
+ 
+        sdf = sdf.withColumn(
+            composite_key, concat(col(key1), col(key2))
+        ).drop(key1, key2)
+        return sdf
+	
+	
+sdf = df_concat(sdf,kwargs)
+
+
+
+	
+
