@@ -43,6 +43,9 @@ def df_subtract(comp:DataFrame,main:DataFrame,key1,key2,composite_key):
 sdf = df_concat(sdf,kwargs)
 
 
+if len(kwargs["composite_key"]) == 1 and len(kwargs["composite_key"]) == 2:
+
+
 
 	
 
